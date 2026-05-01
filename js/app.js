@@ -672,7 +672,18 @@ function applyMarkdown(prefix, suffix) {
   const end = textarea.selectionEnd;
   const text = textarea.value;
   
-  if (start === end) return; // No selection
+  if (start === end) {
+    // Kui valikut ei ole, lisame ainult eesliite (nt **) ja paigutame kursori selle järele
+    const newText = text.substring(0, start) + prefix + text.substring(end);
+    
+    textarea.value = newText;
+    handleEditorInput();
+    
+    // Paigutame kursori lisatud eesliite järele
+    textarea.focus();
+    textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+    return;
+  }
   
   const selectedText = text.substring(start, end);
   const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
