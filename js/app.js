@@ -81,6 +81,7 @@ const els = {
   footerTotalWords: document.getElementById('footer-total-words'),
   footerLastModified: document.getElementById('footer-last-modified'),
   networkStatus: document.getElementById('network-status'),
+  btnDownloadDb: document.getElementById('btn-download-db'),
   
   // Dialog
   dialogOverlay: document.getElementById('dialog-overlay'),
@@ -184,6 +185,9 @@ function init() {
   els.btnSave.addEventListener('click', saveForm);
   els.btnCancel.addEventListener('click', cancelEditing);
   els.btnDelete.addEventListener('click', deleteWord);
+
+  // Footer Actions
+  els.btnDownloadDb.addEventListener('click', downloadDatabase);
 
   // Global keyboard shortcuts (Word List Navigation)
   document.addEventListener('keydown', (e) => {
@@ -777,6 +781,60 @@ function startAddingNewWord() {
   document.querySelectorAll('.word-list-item').forEach(el => el.classList.remove('selected'));
   
   renderEditor();
+}
+
+async function downloadDatabase() {
+  const confirmed = await confirmDialog(
+    'Andmebaasi allalaadimine', 
+    'Kas soovid terve andmebaasi JSON failina alla laadida? See võib võtta veidi aega.'
+  );
+  if (!confirmed) return;
+
+  setLoading(true);
+  try {
+    const dbData = { words_es: {}, words_et: {}, data: {} };
+    
+    // Fetch Spanish words
+    const esCol = collection(db, 'words_es');
+    const esSnap = await getDocs(esCol);
+    esSnap.forEach(doc => { dbData.words_es[doc.id] = doc.data(); });
+    
+    // Fetch Estonian words
+    const etCol = collection(db, 'words_et');
+    const etSnap = await getDocs(etCol);
+    etSnap.forEach(doc => { dbData.words_et[doc.id] = doc.data(); });
+    
+    // Fetch metadata (changes)
+    const dataCol = collection(db, 'data');
+    const dataSnap = await getDocs(dataCol);
+    dataSnap.forEach(doc => { dbData.data[doc.id] = doc.data(); });
+
+    // Format Date: estinol-db-<YYYY-MM-DD-HHMM>
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const HH = String(now.getHours()).padStart(2, '0');
+    const MM = String(now.getMinutes()).padStart(2, '0');
+    const fileName = `estinol-db-${yyyy}-${mm}-${dd}-${HH}${MM}.json`;
+
+    // Create Blob and trigger download
+    const blob = new Blob([JSON.stringify(dbData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+  } catch (error) {
+    console.error('Download DB error:', error);
+    alert('Viga andmebaasi allalaadimisel: ' + error.message);
+  } finally {
+    setLoading(false);
+  }
 }
 
 // --- Dialog & Loading ---
