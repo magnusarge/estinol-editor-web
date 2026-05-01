@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estiñol Editor 2</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/estinol.ico">
+  <!-- Use a lightweight markdown parser like marked.js -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- Login View -->
+  <div id="login-view" class="hidden">
+    <div class="login-container">
+      <div class="login-header">
+        <img src="assets/icon.png" alt="Logo">
+        <h1>Estiñol Editor 2</h1>
+      </div>
+      
+      <div id="login-error" class="error-box hidden"></div>
+      
+      <div class="flex-col gap-4">
+        <div>
+          <label class="text-muted" for="email">E-post</label>
+          <input type="email" id="email" placeholder="nimi@email.ee">
+        </div>
+        
+        <div>
+          <label class="text-muted" for="password">Parool</label>
+          <input type="password" id="password" placeholder="••••••••">
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="remember-me" style="width: auto;">
+          <label for="remember-me">Mäleta minu e-posti aadressi</label>
+        </div>
+        
+        <button id="login-btn" class="btn-primary" style="margin-top: 1rem;">Logi sisse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Editor View -->
+  <div id="editor-view" class="hidden">
+    <!-- App Bar -->
+    <header class="app-bar">
+      <div class="app-bar-title">
+        <img src="assets/icon.png" alt="Logo">
+        <span>Estiñol Editor 2</span>
+      </div>
+      <button id="logout-btn" class="btn-text" style="color: inherit;" title="Logi välja">
+        Logi välja
+      </button>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="main-content">
+      
+      <!-- Left Panel (Sidebar) -->
+      <aside class="left-panel">
+        <div class="sidebar-header">
+          <div class="flex justify-between items-center mb-4">
+            <button id="lang-toggle-btn" class="btn-outline">🇪🇸 ES</button>
+            <button id="new-word-btn" class="btn-primary">Uus sõna</button>
+          </div>
+          <div id="alphabet-container" class="alphabet-grid">
+            <!-- Alphabet buttons will be rendered here via JS -->
+          </div>
+        </div>
+        
+        <div id="word-list" class="word-list">
+          <!-- Word items will be rendered here via JS -->
+        </div>
+
+        <div class="sidebar-footer">
+          Sõnu tähega "<span id="selected-letter-display">A</span>": <span id="letter-word-count">0</span>
+        </div>
+      </aside>
+
+      <!-- Right Panel (Editor) -->
+      <section class="right-panel">
+        
+        <div id="empty-state" class="empty-state">
+          Vali sõna või lisa uus
+        </div>
+
+        <div id="editor-form" class="hidden flex-col h-full">
+          <div id="duplicate-warning" class="error-box hidden" style="text-align: left; display: flex; align-items: center; gap: 0.5rem;">
+            ⚠️ See sõna on juba sõnastikus olemas!
+          </div>
+
+          <div class="flex gap-4 m-b-4">
+            <div class="flex-1">
+              <label class="text-muted bold">Algvorm</label>
+              <input type="text" id="algvorm-input" autocomplete="off">
+            </div>
+            <div class="flex-1">
+              <label class="text-muted bold">Otsinguvorm</label>
+              <input type="text" id="otsingvorm-input" readonly>
+            </div>
+          </div>
+
+          <div class="m-b-4">
+            <label class="text-muted bold m-b-4" style="display:block">Raskusaste</label>
+            <div class="segmented-btn-group" id="raskusaste-group">
+              <button class="segment-btn selected" data-value="0">Määramata</button>
+              <button class="segment-btn" data-value="1">Kerge</button>
+              <button class="segment-btn" data-value="2">Keskmine</button>
+              <button class="segment-btn" data-value="3">Raske</button>
+            </div>
+          </div>
+
+          <div class="toolbar">
+            <button id="btn-bold" class="btn-outline" title="Bold"><b>B</b></button>
+            <button id="btn-italic" class="btn-outline" title="Italic"><i>I</i></button>
+            <div style="flex: 1;"></div>
+            <button id="btn-toggle-preview" class="btn-text">Peida eelvaade</button>
+          </div>
+
+          <div class="editor-main-area">
+            <textarea id="sisu-input" placeholder="Kirjuta Markdown tekst siia..."></textarea>
+            <div id="markdown-preview-container" class="markdown-preview">
+              <!-- Rendered markdown goes here -->
+            </div>
+          </div>
+
+          <div class="action-bar">
+            <button id="btn-delete" class="btn-error-text hidden">Kustuta</button>
+            <div style="flex: 1;"></div>
+            <button id="btn-cancel" class="btn-text hidden">Katkesta</button>
+            <button id="btn-save" class="btn-primary" disabled>Salvesta muudatused</button>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>
+        <span class="bold">Keel:</span> <span id="footer-lang">Hispaania</span> &nbsp;|&nbsp; 
+        <span class="bold">Sõnu kokku:</span> <span id="footer-total-words">0</span>
+      </div>
+      <div class="flex items-center">
+        <span class="bold">Viimati muudetud:</span>&nbsp; <span id="footer-last-modified">-</span>
+        <span id="network-status" class="status-indicator online" title="Internet on olemas"></span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Global Loader -->
+  <div id="global-loader" class="hidden">
+    Laen andmeid...
+  </div>
+
+  <!-- Dialog Overlay -->
+  <div id="dialog-overlay" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3 id="dialog-title">Kinnitus</h3>
+      <p id="dialog-message">Kas oled kindel?</p>
+      <div class="modal-actions">
+        <button id="dialog-btn-cancel" class="btn-outline">Tühista</button>
+        <button id="dialog-btn-confirm" class="btn-error">Kinnita</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <!-- Firebase JS SDK (Modular v9) is loaded in firebase-config.js via CDN -->
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
