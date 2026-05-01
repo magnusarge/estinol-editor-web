@@ -169,6 +169,17 @@ function init() {
   els.btnBold.addEventListener('click', () => applyMarkdown('**', '**'));
   els.btnItalic.addEventListener('click', () => applyMarkdown('*', '*'));
 
+  // Markdown keyboard shortcuts (Ctrl+B / Cmd+B and Ctrl+I / Cmd+I)
+  els.sisuInput.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+      e.preventDefault();
+      applyMarkdown('**', '**');
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+      e.preventDefault();
+      applyMarkdown('*', '*');
+    }
+  });
+
   // Editor Actions
   els.btnSave.addEventListener('click', saveForm);
   els.btnCancel.addEventListener('click', cancelEditing);
