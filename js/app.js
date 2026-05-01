@@ -674,30 +674,23 @@ function applyMarkdown(prefix, suffix) {
   const textarea = els.sisuInput;
   const start = textarea.selectionStart;
   const end = textarea.selectionEnd;
-  const text = textarea.value;
   
+  textarea.focus(); // Fookus on vajalik brauseri execCommand-i toimimiseks
+
   if (start === end) {
-    // Kui valikut ei ole, lisame ainult eesliite (nt **) ja paigutame kursori selle järele
-    const newText = text.substring(0, start) + prefix + text.substring(end);
-    
-    textarea.value = newText;
-    handleEditorInput();
-    
-    // Paigutame kursori lisatud eesliite järele
-    textarea.focus();
-    textarea.setSelectionRange(start + prefix.length, start + prefix.length);
-    return;
+    // Kui valikut ei ole, lisame ainult eesliite (nt **)
+    if (!document.execCommand('insertText', false, prefix)) {
+      textarea.setRangeText(prefix, start, end, 'end'); // Varuvariant
+    }
+  } else {
+    const selectedText = textarea.value.substring(start, end);
+    const replacement = prefix + selectedText + suffix;
+    if (!document.execCommand('insertText', false, replacement)) {
+      textarea.setRangeText(replacement, start, end, 'end'); // Varuvariant
+    }
   }
   
-  const selectedText = text.substring(start, end);
-  const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
-  
-  textarea.value = newText;
   handleEditorInput();
-  
-  // Restore selection
-  textarea.focus();
-  textarea.setSelectionRange(start + prefix.length + selectedText.length + suffix.length, start + prefix.length + selectedText.length + suffix.length);
 }
 
 // --- Helpers & Utilities ---
