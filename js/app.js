@@ -144,6 +144,9 @@ function init() {
     els.loginError.classList.remove('hidden');
   }
 
+  // Loome kohandatud keelevaliku menüü
+  window.updateCustomDropdown = setupCustomDropdown();
+
   // Event Listeners
   els.loginBtn.addEventListener('click', handleLogin);
   els.passwordInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleLogin(); });
@@ -376,6 +379,7 @@ function calculateLastModified() {
 function renderUI() {
   // Update Header
   els.langSelect.value = state.currentLang;
+  if (window.updateCustomDropdown) window.updateCustomDropdown(state.currentLang);
   els.footerLang.textContent = state.currentLang === 'es' ? 'Hispaania' : 'Eesti';
   els.footerTotalWords.textContent = state.words.length;
   
@@ -911,6 +915,61 @@ function formatDate(date) {
   const hr = String(date.getHours()).padStart(2, '0');
   const min = String(date.getMinutes()).padStart(2, '0');
   return `${d}.${m}.${y} ${hr}:${min}`;
+}
+
+// --- Custom Dropdown Setup ---
+function setupCustomDropdown() {
+  const originalSelect = els.langSelect;
+  originalSelect.classList.add('hidden'); // Peidame vana inetu <select> elemendi
+  
+  const wrapper = document.createElement('div');
+  wrapper.className = 'custom-select-wrapper';
+  
+  const trigger = document.createElement('div');
+  trigger.className = 'custom-select-trigger';
+  
+  const options = document.createElement('div');
+  options.className = 'custom-select-options';
+  
+  const langs = [
+    { code: 'es', label: 'Hispaania', flag: 'https://flagcdn.com/es.svg' },
+    { code: 'et', label: 'Eesti', flag: 'https://flagcdn.com/ee.svg' } // 'ee' on Eesti riigikood piltide jaoks
+  ];
+
+  function updateTrigger(code) {
+    const lang = langs.find(l => l.code === code) || langs[0];
+    trigger.innerHTML = `<div class="flex items-center"><img src="${lang.flag}" class="flag-icon" alt="${lang.code}"> ${lang.label}</div> <span style="font-size:0.8em; margin-left:8px;">▼</span>`;
+  }
+
+  langs.forEach(lang => {
+    const opt = document.createElement('div');
+    opt.className = 'custom-select-option';
+    opt.innerHTML = `<img src="${lang.flag}" class="flag-icon" alt="${lang.code}"> ${lang.label}`;
+    opt.addEventListener('click', () => {
+      options.classList.remove('open');
+      if (originalSelect.value !== lang.code) {
+        originalSelect.value = lang.code;
+        originalSelect.dispatchEvent(new Event('change')); // Käivitame vana loogika
+      }
+    });
+    options.appendChild(opt);
+  });
+
+  trigger.addEventListener('click', (e) => {
+    options.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!wrapper.contains(e.target)) {
+      options.classList.remove('open');
+    }
+  });
+
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(options);
+  originalSelect.parentNode.insertBefore(wrapper, originalSelect.nextSibling);
+  
+  return updateTrigger;
 }
 
 // Bootstrap

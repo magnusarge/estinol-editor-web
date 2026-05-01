@@ -210,6 +210,60 @@ button:disabled {
   border-color: var(--text-muted);
 }
 
+/* Custom Flag Dropdown */
+.custom-select-wrapper {
+  position: relative;
+  width: 140px;
+}
+.custom-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-main);
+}
+.custom-select-trigger:hover {
+  border-color: var(--text-muted);
+}
+.custom-select-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  margin-top: 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 20;
+  display: none;
+}
+.custom-select-options.open {
+  display: block;
+}
+.custom-select-option {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+.custom-select-option:hover {
+  background-color: var(--bg-surface-highest);
+}
+.flag-icon {
+  width: 20px;
+  height: 15px;
+  margin-right: 8px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--border-color);
+}
+
 .alphabet-grid {
   display: flex;
   flex-wrap: wrap;
