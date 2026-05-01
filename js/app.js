@@ -185,6 +185,20 @@ function init() {
   els.btnCancel.addEventListener('click', cancelEditing);
   els.btnDelete.addEventListener('click', deleteWord);
 
+  // Global keyboard shortcuts (Word List Navigation)
+  document.addEventListener('keydown', (e) => {
+    // Ignore if user is typing in an input or textarea
+    if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      navigateWordList(-1);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      navigateWordList(1);
+    }
+  });
+
   // Network status
   window.addEventListener('online', updateNetworkStatus);
   window.addEventListener('offline', updateNetworkStatus);
@@ -643,6 +657,41 @@ function applyMarkdown(prefix, suffix) {
 
 // --- Helpers & Utilities ---
 
+let isNavigating = false;
+
+function navigateWordList(direction) {
+  if (isNavigating) return;
+
+  const filteredWords = getWordsByLetter(state.selectedLetter);
+  if (filteredWords.length === 0) return;
+
+  let currentIndex = filteredWords.findIndex(w => w.id === state.selectedWordId);
+  
+  let newIndex = currentIndex === -1 ? 0 : currentIndex + direction;
+  if (newIndex < 0) newIndex = 0;
+  if (newIndex >= filteredWords.length) newIndex = filteredWords.length - 1;
+
+  if (currentIndex === newIndex) return;
+
+  const nextWord = filteredWords[newIndex];
+
+  safeExecute(() => {
+    state.selectedWordId = nextWord.id;
+    state.isAddingNew = false;
+    state.hasUnsavedChanges = false;
+    renderWordList();
+    renderEditor();
+    
+    // Scroll into view
+    setTimeout(() => {
+      const selectedEl = els.wordList.querySelector('.word-list-item.selected');
+      if (selectedEl) {
+        selectedEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }, 0);
+  });
+}
+
 function getWordsByLetter(letter) {
   return state.words.filter(w => {
     const wordForm = w.algvorm.toLowerCase();
@@ -689,16 +738,23 @@ function mapWordForDb(word) {
 }
 
 // --- Actions requiring confirmation if dirty ---
+let isExecuting = false;
 async function safeExecute(actionFn) {
-  if (state.hasUnsavedChanges) {
-    const proceed = await confirmDialog(
-      'Salvestamata muudatused', 
-      'Sul on salvestamata muudatusi. Kas soovid jätkata ja muudatused kaotada?'
-    );
-    if (!proceed) return;
-    state.hasUnsavedChanges = false;
+  if (isExecuting) return;
+  isExecuting = true;
+  try {
+    if (state.hasUnsavedChanges) {
+      const proceed = await confirmDialog(
+        'Salvestamata muudatused', 
+        'Sul on salvestamata muudatusi. Kas soovid jätkata ja muudatused kaotada?'
+      );
+      if (!proceed) return;
+      state.hasUnsavedChanges = false;
+    }
+    actionFn();
+  } finally {
+    isExecuting = false;
   }
-  actionFn();
 }
 
 async function toggleLanguage() {
