@@ -53,7 +53,7 @@ const els = {
   logoutBtn: document.getElementById('logout-btn'),
   
   // Sidebar
-  langToggleBtn: document.getElementById('lang-toggle-btn'),
+  langSelect: document.getElementById('lang-select'),
   newWordBtn: document.getElementById('new-word-btn'),
   alphabetContainer: document.getElementById('alphabet-container'),
   wordList: document.getElementById('word-list'),
@@ -148,10 +148,36 @@ function init() {
   els.loginBtn.addEventListener('click', handleLogin);
   els.passwordInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleLogin(); });
   els.logoutBtn.addEventListener('click', () => safeExecute(handleLogout));
-  
-  els.langToggleBtn.addEventListener('click', () => safeExecute(toggleLanguage));
-  els.newWordBtn.addEventListener('click', () => safeExecute(startAddingNewWord));
-  
+
+  els.langSelect.addEventListener('change', async (e) => {
+    const newLang = e.target.value;
+    const oldLang = state.currentLang;
+
+    if (state.hasUnsavedChanges) {
+      if (isExecuting) {
+        e.target.value = oldLang;
+        return;
+      }
+      isExecuting = true;
+      try {
+        const proceed = await confirmDialog(
+          'Salvestamata muudatused', 
+          'Sul on salvestamata muudatusi. Kas soovid jätkata ja muudatused kaotada?'
+        );
+        if (!proceed) {
+          e.target.value = oldLang;
+          return;
+        }
+        state.hasUnsavedChanges = false;
+      } finally {
+        isExecuting = false;
+      }
+    }
+
+    await changeLanguage(newLang);
+  });
+
+  els.newWordBtn.addEventListener('click', () => safeExecute(startAddingNewWord));  
   // Editor inputs
   els.algvormInput.addEventListener('input', handleEditorInput);
   els.sisuInput.addEventListener('input', handleEditorInput);
@@ -349,7 +375,7 @@ function calculateLastModified() {
 // --- UI Rendering ---
 function renderUI() {
   // Update Header
-  els.langToggleBtn.textContent = state.currentLang === 'es' ? '🇪🇸 ES' : '🇪🇪 ET';
+  els.langSelect.value = state.currentLang;
   els.footerLang.textContent = state.currentLang === 'es' ? 'Hispaania' : 'Eesti';
   els.footerTotalWords.textContent = state.words.length;
   
@@ -761,17 +787,16 @@ async function safeExecute(actionFn) {
   }
 }
 
-async function toggleLanguage() {
-  state.currentLang = state.currentLang === 'es' ? 'et' : 'es';
+async function changeLanguage(newLang) {
+  state.currentLang = newLang;
   state.selectedLetter = 'a';
   state.selectedWordId = null;
   state.isAddingNew = false;
   state.hasUnsavedChanges = false;
-  
+
   calculateLastModified();
   await loadDictionary();
 }
-
 function startAddingNewWord() {
   state.selectedWordId = null;
   state.isAddingNew = true;

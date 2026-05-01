@@ -195,6 +195,21 @@ button:disabled {
   border-bottom: 1px solid var(--border-color);
 }
 
+.lang-select {
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: white;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text-main);
+  cursor: pointer;
+  outline: none;
+}
+.lang-select:hover {
+  border-color: var(--text-muted);
+}
+
 .alphabet-grid {
   display: flex;
   flex-wrap: wrap;
