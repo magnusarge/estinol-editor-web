@@ -511,4 +511,9 @@ button:disabled {
   body.show-editor-mobile .right-panel {
     display: flex;
   }
+
+  #raskusaste-group .segment-btn {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.2rem;
+  }
 }
