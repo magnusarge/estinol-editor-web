@@ -144,6 +144,25 @@ button:disabled {
   border-radius: 4px;
 }
 
+#email,
+#password {
+  margin-bottom: 1rem;
+}
+
+.login-container div:has(#remember-me),
+.login-container label:has(#remember-me) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+#login-btn {
+  display: flex;
+  margin: 0 auto;
+}
+
 /* Editor View Layout */
 #editor-view {
   display: flex;
