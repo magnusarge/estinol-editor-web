@@ -6,6 +6,7 @@
   <title>Estiñol</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/estinol.ico">
+  <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css" />
 </head>
 <body>
 
@@ -50,6 +51,7 @@
       </div>
       <button id="logout-btn" class="btn-text" style="color: inherit;" title="Logi välja">
         Logi välja
+        <span class="hgi-stroke hgi-rounded hgi-logout-04"></span>
       </button>
     </header>
 
@@ -147,14 +149,23 @@
       <div class="flex items-center">
         <span class="bold">Keel:</span>&nbsp;<span id="footer-lang">Hispaania</span> &nbsp;|&nbsp;
         <span class="bold">Sõnu:</span>&nbsp;<span id="footer-total-words">0</span> &nbsp;|&nbsp;
-        <button id="btn-download-db" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;" title="Laadi andmebaas alla">DB</button>&nbsp;|&nbsp;
-        <a href="../estinol.apk"><button id="btn-download-apk" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;" title="Laadi äpp alla">APK</button></a>&nbsp;|&nbsp;
+        
+        
+        <button id="btn-download-db" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;" title="Laadi andmebaas alla"><span class="hgi-stroke hgi-rounded hgi-book-download"></span>DB</button>&nbsp;|&nbsp;
+
+
+        <a href="../estinol.apk"><button id="btn-download-apk" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;" title="Laadi äpp alla"><span class="hgi-stroke hgi-rounded hgi-download-square-02"></span>APK</button></a>
       </div>
       <div class="flex items-center">
-        <span class="bold">Viimati muudetud:</span>&nbsp; <span id="footer-last-modified">-</span>
         <!--<span id="network-status" class="status-indicator online" title="Internet on olemas"></span>-->
       </div>
     </footer>
+    <div class="app-footer">
+      <div class="flex items-center">
+        <span class="hgi-stroke hgi-rounded hgi-calendar-03">&nbsp;</span>
+        <span class="bold">Viimati muudetud:</span>&nbsp;<span id="footer-last-modified">-</span>
+      </div>
+    </div>
   </div>
 
   <!-- Global Loader -->
