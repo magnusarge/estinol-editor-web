@@ -24,7 +24,6 @@ const state = {
   selectedWordId: null,
   isAddingNew: false,
   hasUnsavedChanges: false,
-  showPreview: true,
   isLoading: false,
   latestChangesData: {},
   lastModifiedLang: null,
@@ -68,10 +67,8 @@ const els = {
   otsingvormInput: document.getElementById('otsingvorm-input'),
   raskusasteBtns: document.querySelectorAll('.segment-btn'),
   sisuInput: document.getElementById('sisu-input'),
-  markdownPreview: document.getElementById('markdown-preview-container'),
   btnBold: document.getElementById('btn-bold'),
   btnItalic: document.getElementById('btn-italic'),
-  btnTogglePreview: document.getElementById('btn-toggle-preview'),
   btnDelete: document.getElementById('btn-delete'),
   btnCancel: document.getElementById('btn-cancel'),
   btnSave: document.getElementById('btn-save'),
@@ -195,7 +192,6 @@ function init() {
   });
 
   // Markdown toolbar
-  els.btnTogglePreview.addEventListener('click', togglePreview);
   els.btnBold.addEventListener('click', () => applyMarkdown('**', '**'));
   els.btnItalic.addEventListener('click', () => applyMarkdown('*', '*'));
 
@@ -470,9 +466,7 @@ function renderEditor() {
       els.btnCancel.classList.add('hidden');
       els.btnSave.disabled = true;
     }
-    
-    updateMarkdownPreview();
-    
+
   } else if (state.selectedWordId) {
     els.emptyState.classList.add('hidden');
     els.editorForm.classList.remove('hidden');
@@ -493,8 +487,6 @@ function renderEditor() {
       els.btnCancel.classList.add('hidden');
       els.btnSave.disabled = true;
     }
-    
-    updateMarkdownPreview();
   } else {
     els.emptyState.classList.remove('hidden');
     els.editorForm.classList.add('hidden');
@@ -508,8 +500,6 @@ function handleEditorInput() {
   if (state.isAddingNew) {
     els.otsingvormInput.value = StringUtils.normalize(els.algvormInput.value);
   }
-  
-  updateMarkdownPreview();
   checkChangesAndDuplicates();
 }
 
@@ -646,28 +636,6 @@ function cancelEditing() {
     setRaskusaste(0);
   }
   renderEditor();
-}
-
-function togglePreview() {
-  state.showPreview = !state.showPreview;
-  if (state.showPreview) {
-    els.markdownPreview.classList.remove('hidden');
-    els.btnTogglePreview.textContent = 'Peida eelvaade';
-  } else {
-    els.markdownPreview.classList.add('hidden');
-    els.btnTogglePreview.textContent = 'Näita eelvaadet';
-  }
-}
-
-function updateMarkdownPreview() {
-  if (state.showPreview) {
-    // Using marked.js loaded via CDN in index.html
-    if (window.marked) {
-      els.markdownPreview.innerHTML = marked.parse(els.sisuInput.value);
-    } else {
-      els.markdownPreview.innerHTML = els.sisuInput.value; // Fallback
-    }
-  }
 }
 
 function applyMarkdown(prefix, suffix) {
