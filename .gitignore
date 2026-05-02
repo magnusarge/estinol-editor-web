@@ -43,6 +43,9 @@ firebase-debug.log*
 # Output of 'npm pack'
 *.tgz
 
-# temporary files
+# Temporary files
 tmp/
 temp/
+
+# Maintenance and deploy
+deploy.py
