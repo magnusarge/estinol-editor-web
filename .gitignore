@@ -51,3 +51,9 @@ temp/
 deploy.py
 migration/
 migrate-to-html.js
+migrate_to_html.py
+serviceAccountKey.json
+
+# Python
+venv/
+__pycache__/
