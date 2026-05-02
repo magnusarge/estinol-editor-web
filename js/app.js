@@ -354,8 +354,7 @@ async function loadDictionary() {
           algvorm: wData.algvorm || '',
           otsingVorm: wData.otsing_vorm || '',
           sisuHtml: wData.sisu_html || wData.sisu_md || '',
-          raskusaste: typeof wData.raskusaste === 'number' ? wData.raskusaste : 0,
-          viimatiMuudetud: wData.viimati_muudetud ? new Date(wData.viimati_muudetud) : new Date()
+          raskusaste: typeof wData.raskusaste === 'number' ? wData.raskusaste : 0
         });
       });
     });
@@ -588,8 +587,7 @@ async function saveForm() {
     algvorm: algvorm,
     otsingVorm: els.otsingvormInput.value.trim(),
     sisuHtml: els.sisuInput.innerHTML.trim(),
-    raskusaste: getRaskusaste(),
-    viimatiMuudetud: new Date()
+    raskusaste: getRaskusaste()
   };
 
   setLoading(true);
@@ -645,6 +643,10 @@ async function deleteWord() {
     await updateDoc(docRef, {
       [word.id]: deleteField()
     });
+
+    // Uuenda muudatuste logi
+    const changesRef = doc(db, 'data', 'changes');
+    await setDoc(changesRef, { [`${state.currentLang}_${letter}`]: Date.now() }, { merge: true });
 
     state.words = state.words.filter(w => w.id !== word.id);
     state.selectedWordId = null;
@@ -768,8 +770,7 @@ function mapWordForDb(word) {
     algvorm: word.algvorm,
     otsing_vorm: word.otsingVorm,
     sisu_html: word.sisuHtml,
-    raskusaste: word.raskusaste,
-    viimati_muudetud: word.viimatiMuudetud.getTime()
+    raskusaste: word.raskusaste
   };
 }
 
