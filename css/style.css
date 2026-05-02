@@ -486,3 +486,29 @@ button:disabled {
   gap: 1rem;
   margin-top: 1.5rem;
 }
+
+/* Mobile View */
+@media (max-width: 768px) {
+  .left-panel {
+    min-width: 100%;
+    max-width: 100%;
+    border-right: none;
+  }
+  .right-panel {
+    display: none;
+    width: 100%;
+  }
+  
+  .mobile-only-btn {
+    display: inline-flex !important;
+  }
+
+  /* Kui oleme lülitunud redigeerimisvaatesse */
+  body.show-editor-mobile .left-panel {
+    display: none;
+  }
+  
+  body.show-editor-mobile .right-panel {
+    display: flex;
+  }
+}

@@ -75,6 +75,7 @@ const els = {
   btnDelete: document.getElementById('btn-delete'),
   btnCancel: document.getElementById('btn-cancel'),
   btnSave: document.getElementById('btn-save'),
+  btnBackToList: document.getElementById('btn-back-to-list'),
   
   // Footer
   footerLang: document.getElementById('footer-lang'),
@@ -225,6 +226,9 @@ function init() {
   els.btnSave.addEventListener('click', saveForm);
   els.btnCancel.addEventListener('click', cancelEditing);
   els.btnDelete.addEventListener('click', deleteWord);
+  if (els.btnBackToList) {
+    els.btnBackToList.addEventListener('click', hideMobileEditor);
+  }
 
   // Footer Actions
   els.btnDownloadDb.addEventListener('click', downloadDatabase);
@@ -256,6 +260,16 @@ function showView(view) {
     els.loginView.classList.add('hidden');
     els.editorView.classList.remove('hidden');
   }
+}
+
+function showMobileEditor() {
+  if (window.innerWidth <= 768) {
+    document.body.classList.add('show-editor-mobile');
+  }
+}
+
+function hideMobileEditor() {
+  document.body.classList.remove('show-editor-mobile');
 }
 
 function updateNetworkStatus() {
@@ -309,6 +323,7 @@ async function handleLogout() {
     state.words = [];
     state.selectedWordId = null;
     state.isAddingNew = false;
+    hideMobileEditor();
   } catch (error) {
     console.error("Logout error", error);
   }
@@ -457,6 +472,7 @@ function renderWordList() {
       state.hasUnsavedChanges = false;
       renderWordList();
       renderEditor();
+      showMobileEditor();
     });
     
     els.wordList.appendChild(div);
@@ -635,6 +651,7 @@ async function deleteWord() {
     state.hasUnsavedChanges = false;
     
     renderUI();
+    hideMobileEditor();
   } catch (error) {
     console.error("Delete error:", error);
     alert("Viga kustutamisel: " + error.message);
@@ -699,6 +716,7 @@ function navigateWordList(direction) {
     state.hasUnsavedChanges = false;
     renderWordList();
     renderEditor();
+    showMobileEditor();
     
     // Scroll into view
     setTimeout(() => {
@@ -784,6 +802,7 @@ async function changeLanguage(newLang) {
 
   calculateLastModified();
   await loadDictionary();
+  hideMobileEditor();
 }
 function startAddingNewWord() {
   state.selectedWordId = null;
@@ -794,6 +813,7 @@ function startAddingNewWord() {
   document.querySelectorAll('.word-list-item').forEach(el => el.classList.remove('selected'));
   
   renderEditor();
+  showMobileEditor();
 }
 
 async function downloadDatabase() {
