@@ -395,9 +395,28 @@ button:disabled {
   gap: 1rem;
   min-height: 200px;
 }
-.editor-main-area textarea {
-  resize: none;
+
+#sisu-input, #sisu-html-source {
   flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  background-color: white;
+  overflow-y: auto;
+  outline: none;
+  resize: none;
+}
+
+#sisu-input:empty:before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+  display: block;
+}
+#sisu-input:focus, #sisu-html-source:focus {
+  border-color: var(--text-muted);
 }
 
 /* Bottom Action Bar */

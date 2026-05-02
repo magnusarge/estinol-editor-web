@@ -24,6 +24,7 @@ const state = {
   selectedWordId: null,
   isAddingNew: false,
   hasUnsavedChanges: false,
+  showHtmlSource: false,
   isLoading: false,
   latestChangesData: {},
   lastModifiedLang: null,
@@ -67,6 +68,8 @@ const els = {
   otsingvormInput: document.getElementById('otsingvorm-input'),
   raskusasteBtns: document.querySelectorAll('.segment-btn'),
   sisuInput: document.getElementById('sisu-input'),
+  sisuHtmlSource: document.getElementById('sisu-html-source'),
+  btnToggleHtml: document.getElementById('btn-toggle-html'),
   btnBold: document.getElementById('btn-bold'),
   btnItalic: document.getElementById('btn-italic'),
   btnDelete: document.getElementById('btn-delete'),
@@ -180,7 +183,14 @@ function init() {
   els.newWordBtn.addEventListener('click', () => safeExecute(startAddingNewWord));  
   // Editor inputs
   els.algvormInput.addEventListener('input', handleEditorInput);
-  els.sisuInput.addEventListener('input', handleEditorInput);
+  els.sisuInput.addEventListener('input', () => {
+    els.sisuHtmlSource.value = els.sisuInput.innerHTML;
+    handleEditorInput();
+  });
+  els.sisuHtmlSource.addEventListener('input', () => {
+    els.sisuInput.innerHTML = els.sisuHtmlSource.value;
+    handleEditorInput();
+  });
   
   // Segmented buttons
   els.raskusasteBtns.forEach(btn => {
@@ -191,19 +201,24 @@ function init() {
     });
   });
 
-  // Markdown toolbar
-  els.btnBold.addEventListener('click', () => applyMarkdown('**', '**'));
-  els.btnItalic.addEventListener('click', () => applyMarkdown('*', '*'));
-
-  // Markdown keyboard shortcuts (Ctrl+B / Cmd+B and Ctrl+I / Cmd+I)
-  els.sisuInput.addEventListener('keydown', (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
-      e.preventDefault();
-      applyMarkdown('**', '**');
-    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
-      e.preventDefault();
-      applyMarkdown('*', '*');
-    }
+  // Visuaalredaktori tööriistariba
+  els.btnToggleHtml.addEventListener('click', toggleHtmlSource);
+  
+  els.btnToggleHtml.addEventListener('click', toggleHtmlSource);
+  
+  els.btnBold.addEventListener('mousedown', (e) => {
+    e.preventDefault(); // Väldib fookuse kaotamist
+    if (state.showHtmlSource) return;
+    document.execCommand('bold', false, null);
+    els.sisuHtmlSource.value = els.sisuInput.innerHTML;
+    handleEditorInput();
+  });
+  els.btnItalic.addEventListener('mousedown', (e) => {
+    e.preventDefault(); // Väldib fookuse kaotamist
+    if (state.showHtmlSource) return;
+    document.execCommand('italic', false, null);
+    els.sisuHtmlSource.value = els.sisuInput.innerHTML;
+    handleEditorInput();
   });
 
   // Editor Actions
@@ -323,7 +338,7 @@ async function loadDictionary() {
           id: id,
           algvorm: wData.algvorm || '',
           otsingVorm: wData.otsing_vorm || '',
-          sisuMd: wData.sisu_md || '',
+          sisuHtml: wData.sisu_html || wData.sisu_md || '',
           raskusaste: typeof wData.raskusaste === 'number' ? wData.raskusaste : 0,
           viimatiMuudetud: wData.viimati_muudetud ? new Date(wData.viimati_muudetud) : new Date()
         });
@@ -460,7 +475,8 @@ function renderEditor() {
     if (!state.hasUnsavedChanges) {
       els.algvormInput.value = '';
       els.otsingvormInput.value = '';
-      els.sisuInput.value = '';
+      els.sisuInput.innerHTML = '';
+      els.sisuHtmlSource.value = '';
       setRaskusaste(0);
       els.duplicateWarning.classList.add('hidden');
       els.btnCancel.classList.add('hidden');
@@ -482,7 +498,8 @@ function renderEditor() {
     if (!state.hasUnsavedChanges) {
       els.algvormInput.value = word.algvorm;
       els.otsingvormInput.value = word.otsingVorm;
-      els.sisuInput.value = word.sisuMd;
+      els.sisuInput.innerHTML = word.sisuHtml;
+      els.sisuHtmlSource.value = word.sisuHtml;
       setRaskusaste(word.raskusaste);
       els.btnCancel.classList.add('hidden');
       els.btnSave.disabled = true;
@@ -517,12 +534,12 @@ function checkChangesAndDuplicates() {
     else els.duplicateWarning.classList.add('hidden');
     
     // Dirty check
-    isDirty = inputAlgvorm.length > 0 || els.sisuInput.value.length > 0;
+    isDirty = inputAlgvorm.length > 0 || (els.sisuInput.innerHTML && els.sisuInput.innerHTML.trim().length > 0);
   } else if (state.selectedWordId) {
     const word = state.words.find(w => w.id === state.selectedWordId);
     if (word) {
       isDirty = els.algvormInput.value !== word.algvorm ||
-                els.sisuInput.value !== word.sisuMd ||
+                els.sisuInput.innerHTML !== word.sisuHtml ||
                 getRaskusaste() !== word.raskusaste;
     }
   }
@@ -554,7 +571,7 @@ async function saveForm() {
     id: isNew ? `word_${Date.now()}` : state.selectedWordId,
     algvorm: algvorm,
     otsingVorm: els.otsingvormInput.value.trim(),
-    sisuMd: els.sisuInput.value.trim(),
+    sisuHtml: els.sisuInput.innerHTML.trim(),
     raskusaste: getRaskusaste(),
     viimatiMuudetud: new Date()
   };
@@ -632,33 +649,28 @@ function cancelEditing() {
     // Reset to new form
     els.algvormInput.value = '';
     els.otsingvormInput.value = '';
-    els.sisuInput.value = '';
+    els.sisuInput.innerHTML = '';
+    els.sisuHtmlSource.value = '';
     setRaskusaste(0);
   }
   renderEditor();
 }
 
-function applyMarkdown(prefix, suffix) {
-  const textarea = els.sisuInput;
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  
-  textarea.focus(); // Fookus on vajalik brauseri execCommand-i toimimiseks
-
-  if (start === end) {
-    // Kui valikut ei ole, lisame ainult eesliite (nt **)
-    if (!document.execCommand('insertText', false, prefix)) {
-      textarea.setRangeText(prefix, start, end, 'end'); // Varuvariant
-    }
+function toggleHtmlSource() {
+  state.showHtmlSource = !state.showHtmlSource;
+  if (state.showHtmlSource) {
+    els.sisuInput.classList.add('hidden');
+    els.sisuHtmlSource.classList.remove('hidden');
+    els.btnToggleHtml.textContent = 'Näita visuaalset';
+    els.btnBold.disabled = true;
+    els.btnItalic.disabled = true;
   } else {
-    const selectedText = textarea.value.substring(start, end);
-    const replacement = prefix + selectedText + suffix;
-    if (!document.execCommand('insertText', false, replacement)) {
-      textarea.setRangeText(replacement, start, end, 'end'); // Varuvariant
-    }
+    els.sisuHtmlSource.classList.add('hidden');
+    els.sisuInput.classList.remove('hidden');
+    els.btnToggleHtml.textContent = 'Näita HTML-i';
+    els.btnBold.disabled = false;
+    els.btnItalic.disabled = false;
   }
-  
-  handleEditorInput();
 }
 
 // --- Helpers & Utilities ---
@@ -737,7 +749,7 @@ function mapWordForDb(word) {
   return {
     algvorm: word.algvorm,
     otsing_vorm: word.otsingVorm,
-    sisu_md: word.sisuMd,
+    sisu_html: word.sisuHtml,
     raskusaste: word.raskusaste,
     viimati_muudetud: word.viimatiMuudetud.getTime()
   };

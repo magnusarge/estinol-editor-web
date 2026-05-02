@@ -117,11 +117,12 @@
             <button id="btn-bold" class="btn-outline" title="Bold"><b>B</b></button>
             <button id="btn-italic" class="btn-outline" title="Italic"><i>I</i></button>
             <div style="flex: 1;"></div>
-            
+            <button id="btn-toggle-html" class="btn-text" style="font-size: 0.85rem;">Näita HTML-i</button>
           </div>
 
           <div class="editor-main-area">
-            <textarea id="sisu-input" placeholder="Kirjuta Markdown tekst siia..."></textarea>
+            <div id="sisu-input" contenteditable="true" data-placeholder="Kirjuta tekst siia..."></div>
+          <textarea id="sisu-html-source" class="hidden" placeholder="<p>HTML kood...</p>"></textarea>
             
             </div>
           </div>
