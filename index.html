@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/estinol.ico">
   <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@300" rel="stylesheet" />
 </head>
 
 <body>
@@ -24,18 +25,24 @@
 
       <div class="flex-col gap-4">
         <div>
-          <label class="text-muted" for="email">E-post</label>
+          <label class="text-muted flex items-center" style="gap: 4px; margin-bottom: 4px;" for="email">
+            <i class="material-symbols-outlined" style="font-size: 20px;">email</i>
+            E-post
+          </label>
           <input type="email" id="email" placeholder="nimi@email.ee">
         </div>
 
         <div>
-          <label class="text-muted" for="password">Parool</label>
-          <input type="password" id="password" placeholder="••••••••">
+          <label class="text-muted flex items-center" style="gap: 4px; margin-bottom: 4px;" for="password">
+            <i class="material-symbols-outlined" style="font-size: 20px;">lock</i>
+            Parool
+          </label>
+          <input type="password" id="password" placeholder="****">
         </div>
 
         <div class="flex items-center gap-2">
           <input type="checkbox" id="remember-me" style="width: auto;">
-          <label for="remember-me">Mäleta minu e-posti aadressi</label>
+          <label for="remember-me">Jäta e-posti aadress meelde</label>
         </div>
 
         <button id="login-btn" class="btn-primary" style="margin-top: 1rem;">Logi sisse</button>
@@ -145,34 +152,34 @@
       </section>
 
 
-  </main>
+    </main>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    <div class="flex items-center">
-      <span class="bold">Keel:</span>&nbsp;<span id="footer-lang">Hispaania</span> &nbsp;|&nbsp;
-      <span class="bold">Sõnu:</span>&nbsp;<span id="footer-total-words">0</span> &nbsp;|&nbsp;
-
-
-      <button id="btn-download-db" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;"
-        title="Laadi andmebaas alla"><span
-          class="hgi-stroke hgi-rounded hgi-book-download"></span>DB</button>&nbsp;|&nbsp;
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="flex items-center">
+        <span class="bold">Keel:</span>&nbsp;<span id="footer-lang">Hispaania</span> &nbsp;|&nbsp;
+        <span class="bold">Sõnu:</span>&nbsp;<span id="footer-total-words">0</span> &nbsp;|&nbsp;
 
 
-      <a href="../estinol.apk"><button id="btn-download-apk" class="btn-text"
-          style="padding: 0 0.5rem; font-size: inherit;" title="Laadi äpp alla"><span
-            class="hgi-stroke hgi-rounded hgi-download-square-02"></span>APK</button></a>
+        <button id="btn-download-db" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;"
+          title="Laadi andmebaas alla"><span
+            class="hgi-stroke hgi-rounded hgi-book-download"></span>DB</button>&nbsp;|&nbsp;
+
+
+        <a href="../estinol.apk"><button id="btn-download-apk" class="btn-text"
+            style="padding: 0 0.5rem; font-size: inherit;" title="Laadi äpp alla"><span
+              class="hgi-stroke hgi-rounded hgi-download-square-02"></span>APK</button></a>
+      </div>
+      <div class="flex items-center">
+        <!--<span id="network-status" class="status-indicator online" title="Internet on olemas"></span>-->
+      </div>
+    </footer>
+    <div class="app-footer">
+      <div class="flex items-center">
+        <span class="hgi-stroke hgi-rounded hgi-calendar-03">&nbsp;</span>
+        <span class="bold">Viimati muudetud:</span>&nbsp;<span id="footer-last-modified">-</span>
+      </div>
     </div>
-    <div class="flex items-center">
-      <!--<span id="network-status" class="status-indicator online" title="Internet on olemas"></span>-->
-    </div>
-  </footer>
-  <div class="app-footer">
-    <div class="flex items-center">
-      <span class="hgi-stroke hgi-rounded hgi-calendar-03">&nbsp;</span>
-      <span class="bold">Viimati muudetud:</span>&nbsp;<span id="footer-last-modified">-</span>
-    </div>
-  </div>
   </div>
 
   <!-- Global Loader -->
