@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="et">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="icon" href="assets/estinol.ico">
   <link rel="stylesheet" href="https://cdn.hugeicons.com/font/hgi-stroke-rounded.css" />
 </head>
+
 <body>
 
   <!-- Login View -->
@@ -17,25 +19,25 @@
         <img src="assets/icon.png" alt="Logo">
         <h1>Estiñol</h1>
       </div>
-      
+
       <div id="login-error" class="error-box hidden"></div>
-      
+
       <div class="flex-col gap-4">
         <div>
           <label class="text-muted" for="email">E-post</label>
           <input type="email" id="email" placeholder="nimi@email.ee">
         </div>
-        
+
         <div>
           <label class="text-muted" for="password">Parool</label>
           <input type="password" id="password" placeholder="••••••••">
         </div>
-        
+
         <div class="flex items-center gap-2">
           <input type="checkbox" id="remember-me" style="width: auto;">
           <label for="remember-me">Mäleta minu e-posti aadressi</label>
         </div>
-        
+
         <button id="login-btn" class="btn-primary" style="margin-top: 1rem;">Logi sisse</button>
       </div>
     </div>
@@ -56,7 +58,7 @@
 
     <!-- Main Content Layout -->
     <main class="main-content">
-      
+
       <!-- Left Panel (Sidebar) -->
       <aside class="left-panel">
         <div class="sidebar-header">
@@ -71,7 +73,7 @@
             <!-- Alphabet buttons will be rendered here via JS -->
           </div>
         </div>
-        
+
         <div id="word-list" class="word-list">
           <!-- Word items will be rendered here via JS -->
         </div>
@@ -83,16 +85,19 @@
 
       <!-- Right Panel (Editor) -->
       <section class="right-panel">
-        
+
         <!-- Nupp "Tagasi", mis on nähtav vaid kitsal ekraanil -->
-        <button id="btn-back-to-list" class="btn-text mobile-only-btn" style="align-self: flex-start; margin-bottom: 1rem; display: none;"><span class="hgi-stroke hgi-rounded hgi-circle-arrow-left-01"></span>Tagasi nimekirja</button>
+        <button id="btn-back-to-list" class="btn-text mobile-only-btn"
+          style="align-self: flex-start; margin-bottom: 1rem; display: none;"><span
+            class="hgi-stroke hgi-rounded hgi-circle-arrow-left-01"></span>Tagasi nimekirja</button>
 
         <div id="empty-state" class="empty-state">
           Vali sõna või lisa uus
         </div>
 
         <div id="editor-form" class="hidden flex-col flex-1">
-          <div id="duplicate-warning" class="error-box hidden" style="text-align: left; display: flex; align-items: center; gap: 0.5rem;">
+          <div id="duplicate-warning" class="error-box hidden"
+            style="text-align: left; display: flex; align-items: center; gap: 0.5rem;">
             ⚠️ See sõna on juba sõnastikus olemas!
           </div>
 
@@ -126,45 +131,48 @@
 
           <div class="editor-main-area">
             <div id="sisu-input" contenteditable="true" data-placeholder="Kirjuta tekst siia..."></div>
-          <textarea id="sisu-html-source" class="hidden" placeholder="<p>HTML kood...</p>"></textarea>
-            
-            </div>
-          </div>
+            <textarea id="sisu-html-source" class="hidden" placeholder="<p>HTML kood...</p>"></textarea>
 
-          <div class="action-bar">
-            <button id="btn-delete" class="btn-error-text hidden">Kustuta</button>
-            <div style="flex: 1;"></div>
-            <button id="btn-cancel" class="btn-text hidden">Katkesta</button>
-            <button id="btn-save" class="btn-primary" disabled>Salvesta muudatused</button>
           </div>
         </div>
 
+        <div class="action-bar">
+          <button id="btn-delete" class="btn-error-text hidden">Kustuta</button>
+          <div style="flex: 1;"></div>
+          <button id="btn-cancel" class="btn-text hidden">Katkesta</button>
+          <button id="btn-save" class="btn-primary" disabled>Salvesta muudatused</button>
+        </div>
       </section>
 
-    </main>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-      <div class="flex items-center">
-        <span class="bold">Keel:</span>&nbsp;<span id="footer-lang">Hispaania</span> &nbsp;|&nbsp;
-        <span class="bold">Sõnu:</span>&nbsp;<span id="footer-total-words">0</span> &nbsp;|&nbsp;
-        
-        
-        <button id="btn-download-db" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;" title="Laadi andmebaas alla"><span class="hgi-stroke hgi-rounded hgi-book-download"></span>DB</button>&nbsp;|&nbsp;
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="flex items-center">
+      <span class="bold">Keel:</span>&nbsp;<span id="footer-lang">Hispaania</span> &nbsp;|&nbsp;
+      <span class="bold">Sõnu:</span>&nbsp;<span id="footer-total-words">0</span> &nbsp;|&nbsp;
 
 
-        <a href="../estinol.apk"><button id="btn-download-apk" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;" title="Laadi äpp alla"><span class="hgi-stroke hgi-rounded hgi-download-square-02"></span>APK</button></a>
-      </div>
-      <div class="flex items-center">
-        <!--<span id="network-status" class="status-indicator online" title="Internet on olemas"></span>-->
-      </div>
-    </footer>
-    <div class="app-footer">
-      <div class="flex items-center">
-        <span class="hgi-stroke hgi-rounded hgi-calendar-03">&nbsp;</span>
-        <span class="bold">Viimati muudetud:</span>&nbsp;<span id="footer-last-modified">-</span>
-      </div>
+      <button id="btn-download-db" class="btn-text" style="padding: 0 0.5rem; font-size: inherit;"
+        title="Laadi andmebaas alla"><span
+          class="hgi-stroke hgi-rounded hgi-book-download"></span>DB</button>&nbsp;|&nbsp;
+
+
+      <a href="../estinol.apk"><button id="btn-download-apk" class="btn-text"
+          style="padding: 0 0.5rem; font-size: inherit;" title="Laadi äpp alla"><span
+            class="hgi-stroke hgi-rounded hgi-download-square-02"></span>APK</button></a>
     </div>
+    <div class="flex items-center">
+      <!--<span id="network-status" class="status-indicator online" title="Internet on olemas"></span>-->
+    </div>
+  </footer>
+  <div class="app-footer">
+    <div class="flex items-center">
+      <span class="hgi-stroke hgi-rounded hgi-calendar-03">&nbsp;</span>
+      <span class="bold">Viimati muudetud:</span>&nbsp;<span id="footer-last-modified">-</span>
+    </div>
+  </div>
   </div>
 
   <!-- Global Loader -->
@@ -190,4 +198,5 @@
   <script type="module" src="js/app.js"></script>
 
 </body>
+
 </html>
