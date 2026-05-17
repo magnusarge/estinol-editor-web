@@ -57,6 +57,15 @@
       <div class="app-bar-title">
         <img src="assets/icon.png" alt="Logo">
         <span>Estiñol</span>
+        
+        <button id="search-toggle-btn" class="btn-text search-toggle-btn" title="Otsi">
+          <i class="material-symbols-outlined" style="font-size: 24px;">search</i>
+        </button>
+        <div id="search-container" class="search-container">
+          <input type="text" id="search-input" placeholder="Otsi sõna...">
+          <i class="material-symbols-outlined search-icon-desktop" style="font-size: 20px;">search</i>
+          <div id="search-results" class="search-results hidden"></div>
+        </div>
       </div>
       <button id="logout-btn" class="btn-text" style="color: inherit;" title="Logi välja">
         <i class="material-symbols-outlined" style="font-size: 20px; vertical-align: middle;">logout</i>

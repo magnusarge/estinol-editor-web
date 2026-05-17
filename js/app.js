@@ -24,6 +24,8 @@ const state = {
   selectedWordId: null,
   isAddingNew: false,
   hasUnsavedChanges: false,
+  searchSelectedIndex: -1,
+  currentSearchResults: [],
   showHtmlSource: false,
   isLoading: false,
   latestChangesData: {},
@@ -59,6 +61,12 @@ const els = {
   wordList: document.getElementById('word-list'),
   selectedLetterDisplay: document.getElementById('selected-letter-display'),
   letterWordCount: document.getElementById('letter-word-count'),
+  
+  // Search
+  searchToggleBtn: document.getElementById('search-toggle-btn'),
+  searchContainer: document.getElementById('search-container'),
+  searchInput: document.getElementById('search-input'),
+  searchResults: document.getElementById('search-results'),
   
   // Editor
   emptyState: document.getElementById('empty-state'),
@@ -246,6 +254,37 @@ function init() {
 
   // Global keyboard shortcuts (Word List Navigation)
   document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      els.searchResults.classList.add('hidden');
+      if (els.searchContainer.classList.contains('mobile-open')) {
+        els.searchContainer.classList.remove('mobile-open');
+        els.searchInput.blur();
+      }
+    }
+
+    // --- Search Navigation Logic ---
+    const searchOpen = !els.searchResults.classList.contains('hidden');
+    if (searchOpen && state.currentSearchResults && state.currentSearchResults.length > 0) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        state.searchSelectedIndex = Math.min(state.searchSelectedIndex + 1, state.currentSearchResults.length - 1);
+        updateSearchSelection(true);
+        return;
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        state.searchSelectedIndex = Math.max(state.searchSelectedIndex - 1, 0);
+        updateSearchSelection(true);
+        return;
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (state.searchSelectedIndex >= 0 && state.searchSelectedIndex < state.currentSearchResults.length) {
+          const selectedWord = state.currentSearchResults[state.searchSelectedIndex];
+          safeExecute(() => selectSearchResult(selectedWord));
+        }
+        return;
+      }
+    }
+
     // Ignore if user is typing in an input or textarea
     if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
@@ -261,6 +300,25 @@ function init() {
   // Network status
   window.addEventListener('online', updateNetworkStatus);
   window.addEventListener('offline', updateNetworkStatus);
+
+  // Search Toggle (Mobile)
+  els.searchToggleBtn.addEventListener('click', () => {
+    const isOpen = els.searchContainer.classList.toggle('mobile-open');
+    if (isOpen) {
+      els.searchInput.focus();
+    }
+  });
+
+  // Search Input Handler
+  els.searchInput.addEventListener('input', handleSearchInput);
+
+  // Close search when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!els.searchContainer.contains(e.target) && !els.searchToggleBtn.contains(e.target)) {
+      els.searchResults.classList.add('hidden');
+      els.searchContainer.classList.remove('mobile-open');
+    }
+  });
 }
 
 function showView(view) {
@@ -535,6 +593,112 @@ function renderEditor() {
     els.editorForm.classList.add('hidden');
     els.editorForm.classList.remove('flex');
   }
+}
+
+// --- Search Logic ---
+function handleSearchInput(e) {
+  const query = StringUtils.normalize(e.target.value.trim());
+  if (query.length === 0) {
+    els.searchResults.innerHTML = '';
+    els.searchResults.classList.add('hidden');
+    state.currentSearchResults = [];
+    state.searchSelectedIndex = -1;
+    return;
+  }
+
+  // Otsime lokaalsest puhvrist (state.words)
+  const results = state.words.filter(w => {
+    if (!w.algvorm) return false;
+    const normAlgvorm = StringUtils.normalize(w.algvorm);
+    const normOtsing = w.otsingVorm ? StringUtils.normalize(w.otsingVorm) : '';
+    return normAlgvorm.includes(query) || normOtsing.includes(query);
+  }).slice(0, 50); // Maksimaalselt 50 vastet, et brauserit mitte koormata
+
+  state.currentSearchResults = results;
+  state.searchSelectedIndex = -1;
+  renderSearchResults(results);
+}
+
+function renderSearchResults(results) {
+  els.searchResults.innerHTML = '';
+
+  if (results.length === 0) {
+    const div = document.createElement('div');
+    div.className = 'search-result-item text-muted';
+    div.textContent = 'Ei leitud vasteid';
+    els.searchResults.appendChild(div);
+  } else {
+    results.forEach((word, index) => {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+
+      const title = document.createElement('div');
+      title.className = 'search-result-title';
+      title.textContent = word.algvorm;
+
+      const subtitle = document.createElement('div');
+      subtitle.className = 'search-result-subtitle';
+      subtitle.textContent = word.otsingVorm;
+
+      div.appendChild(title);
+      div.appendChild(subtitle);
+
+      div.onmouseenter = () => {
+        state.searchSelectedIndex = index;
+        updateSearchSelection(false);
+      };
+
+      // safeExecute kontrollib enne laadimist salvestamata muudatusi
+      div.onclick = () => safeExecute(() => selectSearchResult(word));
+      els.searchResults.appendChild(div);
+    });
+  }
+
+  els.searchResults.classList.remove('hidden');
+}
+
+function updateSearchSelection(scrollIntoView = false) {
+  const items = els.searchResults.querySelectorAll('.search-result-item');
+  items.forEach((item, index) => {
+    if (index === state.searchSelectedIndex) {
+      item.classList.add('selected');
+      if (scrollIntoView) {
+        item.scrollIntoView({ block: 'nearest' });
+      }
+    } else {
+      item.classList.remove('selected');
+    }
+  });
+}
+
+function selectSearchResult(word) {
+  if (!word.algvorm) return;
+
+  // Tuvastame, millise tähestiku tähe alla see sõna kuulub
+  const firstChar = StringUtils.filterKey(word.algvorm, state.currentLang).charAt(0);
+  if (ALPHABETS[state.currentLang].includes(firstChar)) {
+    state.selectedLetter = firstChar;
+  }
+
+  state.selectedWordId = word.id;
+  state.isAddingNew = false;
+  state.hasUnsavedChanges = false;
+
+  // Peidame otsingu uuesti ära
+  els.searchInput.value = '';
+  els.searchResults.classList.add('hidden');
+  els.searchContainer.classList.remove('mobile-open');
+
+  renderUI();
+  showMobileEditor();
+
+  // Kerime nimekirja õige sõna juurde, pannes selle nimekirja keskele
+  setTimeout(() => {
+    const selectedEl = els.wordList.querySelector('.word-list-item.selected');
+    if (selectedEl) {
+      selectedEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }, 50);
 }
 
 // --- Editor Logic ---
