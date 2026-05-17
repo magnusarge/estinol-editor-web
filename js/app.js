@@ -765,7 +765,7 @@ async function saveForm() {
     raskusaste: getRaskusaste()
   };
 
-  setLoading(true);
+  setLoading(true, 'Salvestan...');
   try {
     const letter = word.algvorm.toLowerCase()[0];
     const docRef = doc(db, `words_${state.currentLang}`, letter);
@@ -810,7 +810,7 @@ async function deleteWord() {
   const confirmed = await confirmDialog('Kustuta sõna', `Kas oled kindel, et soovid sõna "${word.algvorm}" kustutada? Seda tegevust ei saa tagasi võtta.`);
   if (!confirmed) return;
 
-  setLoading(true);
+  setLoading(true, 'Kustutan...');
   try {
     const letter = word.algvorm.toLowerCase()[0];
     const docRef = doc(db, `words_${state.currentLang}`, letter);
@@ -1001,7 +1001,7 @@ async function downloadDatabase() {
   );
   if (!confirmed) return;
 
-  setLoading(true);
+  setLoading(true, 'Valmistan faili...');
   try {
     const dbData = { words_es: {}, words_et: {}, data: {} };
     
@@ -1069,9 +1069,10 @@ function confirmDialog(title, message) {
   });
 }
 
-function setLoading(isLoading) {
+function setLoading(isLoading, message = 'Laen andmeid...') {
   state.isLoading = isLoading;
   if (isLoading) {
+    els.globalLoader.textContent = message;
     els.globalLoader.classList.remove('hidden');
   } else {
     els.globalLoader.classList.add('hidden');
