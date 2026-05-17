@@ -97,7 +97,13 @@ const els = {
   dialogTitle: document.getElementById('dialog-title'),
   dialogMessage: document.getElementById('dialog-message'),
   dialogBtnCancel: document.getElementById('dialog-btn-cancel'),
-  dialogBtnConfirm: document.getElementById('dialog-btn-confirm')
+  dialogBtnConfirm: document.getElementById('dialog-btn-confirm'),
+  
+  // Success Dialog
+  successDialogOverlay: document.getElementById('success-dialog-overlay'),
+  successDialogMessage: document.getElementById('success-dialog-message'),
+  successBtnView: document.getElementById('success-btn-view'),
+  successBtnNext: document.getElementById('success-btn-next')
 };
 
 // --- String Utils (from Flutter) ---
@@ -254,6 +260,12 @@ function init() {
 
   // Global keyboard shortcuts (Word List Navigation)
   document.addEventListener('keydown', (e) => {
+    // Ignore global shortcuts if dialogs are open
+    if (!els.dialogOverlay.classList.contains('hidden') || 
+        (els.successDialogOverlay && !els.successDialogOverlay.classList.contains('hidden'))) {
+      return;
+    }
+
     if (e.key === 'Escape') {
       els.searchResults.classList.add('hidden');
       if (els.searchContainer.classList.contains('mobile-open')) {
@@ -765,6 +777,7 @@ async function saveForm() {
     raskusaste: getRaskusaste()
   };
 
+  let saveSuccess = false;
   setLoading(true, 'Salvestan...');
   try {
     const letter = word.algvorm.toLowerCase()[0];
@@ -795,11 +808,22 @@ async function saveForm() {
     state.selectedWordId = word.id;
     
     renderUI();
+    saveSuccess = true;
   } catch(error) {
     console.error("Save error:", error);
     alert("Viga salvestamisel: " + error.message);
   } finally {
     setLoading(false);
+  }
+
+  // Show success modal only if adding a new word succeeded
+  if (saveSuccess && isNew) {
+    setTimeout(async () => {
+      const action = await showSuccessDialog(word.algvorm);
+      if (action === 'next') {
+        startAddingNewWord();
+      }
+    }, 10); // Lühike viivitus tagab, et laadimisaken on kindlalt peidetud
   }
 }
 
@@ -1066,6 +1090,44 @@ function confirmDialog(title, message) {
     
     els.dialogBtnCancel.addEventListener('click', onCancel);
     els.dialogBtnConfirm.addEventListener('click', onConfirm);
+  });
+}
+
+function showSuccessDialog(wordAlgvorm) {
+  return new Promise((resolve) => {
+    els.successDialogMessage.innerHTML = `Sõna <b>${wordAlgvorm}</b> lisatud andmebaasi.`;
+    els.successDialogOverlay.classList.remove('hidden');
+    
+    // Timeout is used to reliably set focus after removing hidden class
+    setTimeout(() => els.successBtnNext.focus(), 10); 
+    
+    const cleanup = () => {
+      els.successBtnView.removeEventListener('click', onView);
+      els.successBtnNext.removeEventListener('click', onNext);
+      document.removeEventListener('keydown', onKeyDown);
+      els.successDialogOverlay.classList.add('hidden');
+    };
+    
+    const onView = () => { cleanup(); resolve('view'); };
+    const onNext = () => { cleanup(); resolve('next'); };
+    
+    const onKeyDown = (e) => {
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab'].includes(e.key)) {
+        e.preventDefault(); // Peatame vaikekäitumise lehe kerimisel
+        if (document.activeElement === els.successBtnNext) {
+          els.successBtnView.focus();
+        } else {
+          els.successBtnNext.focus();
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        onView();
+      }
+    };
+    
+    els.successBtnView.addEventListener('click', onView);
+    els.successBtnNext.addEventListener('click', onNext);
+    document.addEventListener('keydown', onKeyDown);
   });
 }
 
