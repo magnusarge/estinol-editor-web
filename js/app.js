@@ -267,10 +267,20 @@ function init() {
     }
 
     if (e.key === 'Escape') {
-      els.searchResults.classList.add('hidden');
+      let handled = false;
+      if (!els.searchResults.classList.contains('hidden')) {
+        els.searchResults.classList.add('hidden');
+        handled = true;
+      }
       if (els.searchContainer.classList.contains('mobile-open')) {
         els.searchContainer.classList.remove('mobile-open');
         els.searchInput.blur();
+        handled = true;
+      }
+      
+      if (!handled && document.body.classList.contains('show-editor-mobile')) {
+        hideMobileEditor();
+        if (document.activeElement) document.activeElement.blur();
       }
     }
 

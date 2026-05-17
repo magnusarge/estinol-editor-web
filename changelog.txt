@@ -11,3 +11,4 @@
 2026-05-17: Uue sõna lisamisel aktiveerub algvormi väli koheselt ning salvestamisnupu tekst on dünaamiliselt "Salvesta uus".
 2026-05-17: Mobiilivaates sõna redaktorist nimekirja naastes keritakse nimekiri automaatselt valitud sõna juurde.
 2026-05-17: Eemaldatud nimekirja kerimisel sujuv animatsioon (smooth scroll), et navigatsioon oleks kiirem ja kohene.
+2026-05-17: Mobiilivaates sulgeb Esc klahv sõna redaktori ja viib tagasi nimekirja.
