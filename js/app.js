@@ -567,6 +567,7 @@ function renderEditor() {
     
     els.algvormInput.readOnly = false;
     els.btnDelete.classList.add('hidden');
+    els.btnSave.textContent = 'Salvesta uus';
     
     if (!state.hasUnsavedChanges) {
       els.algvormInput.value = '';
@@ -590,6 +591,7 @@ function renderEditor() {
     els.algvormInput.readOnly = true;
     els.btnDelete.classList.remove('hidden');
     els.duplicateWarning.classList.add('hidden');
+    els.btnSave.textContent = 'Salvesta muudatused';
     
     if (!state.hasUnsavedChanges) {
       els.algvormInput.value = word.algvorm;
@@ -1016,6 +1018,10 @@ function startAddingNewWord() {
   
   renderEditor();
   showMobileEditor();
+
+  setTimeout(() => {
+    els.algvormInput.focus();
+  }, 50);
 }
 
 async function downloadDatabase() {
