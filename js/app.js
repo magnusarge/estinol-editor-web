@@ -351,6 +351,12 @@ function showMobileEditor() {
 
 function hideMobileEditor() {
   document.body.classList.remove('show-editor-mobile');
+  setTimeout(() => {
+    const selectedEl = els.wordList.querySelector('.word-list-item.selected');
+    if (selectedEl) {
+      selectedEl.scrollIntoView({ block: 'center', behavior: 'auto' });
+    }
+  }, 50);
 }
 
 function updateNetworkStatus() {
@@ -710,7 +716,7 @@ function selectSearchResult(word) {
   setTimeout(() => {
     const selectedEl = els.wordList.querySelector('.word-list-item.selected');
     if (selectedEl) {
-      selectedEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      selectedEl.scrollIntoView({ block: 'center', behavior: 'auto' });
     }
   }, 50);
 }
@@ -925,7 +931,7 @@ function navigateWordList(direction) {
     setTimeout(() => {
       const selectedEl = els.wordList.querySelector('.word-list-item.selected');
       if (selectedEl) {
-        selectedEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        selectedEl.scrollIntoView({ block: 'nearest', behavior: 'auto' });
       }
     }, 0);
   });

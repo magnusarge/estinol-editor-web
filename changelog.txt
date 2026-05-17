@@ -1,0 +1,13 @@
+2026-05-17: Parandatud hispaania keele "á" tähe filtreerimine vasakpoolses sõnade nimekirjas (lisatud StringUtils.filterKey).
+2026-05-17: Lisatud responsiivne otsingukast päisesse (luubi ikoon mobiilis, avatud kast lauaarvutis).
+2026-05-17: Mobiilivaates avaneb otsingukast ja suunab kursori automaatselt sisestusväljale.
+2026-05-17: Otsingukasti saab nüüd sulgeda Esc klahviga või vajutades ekraanil mujale.
+2026-05-17: Loodud reaalajas toimiv lokaalne otsingufunktsioon (töötab ilma lisa andmebaasipäringuteta).
+2026-05-17: Otsingutulemuste rippmenüü stiliseeritud ja muudetud sarnaseks vasakpoolse nimekirjaga.
+2026-05-17: Lisatud klaviatuuriga navigeerimise tugi otsingutulemustes (nool üles, nool alla, Enter).
+2026-05-17: Otsingukast muudetud arvutivaates 1.5 korda laiemaks (300px).
+2026-05-17: Dünaamilised tekstid laadimisekraanile ("Laen andmeid...", "Salvestan...", "Kustutan...", "Valmistan faili...").
+2026-05-17: Lisatud edukuse teavitusaken (modal) uue sõna lisamisel. Lisatud nuppudele klaviatuuriga navigeerimine.
+2026-05-17: Uue sõna lisamisel aktiveerub algvormi väli koheselt ning salvestamisnupu tekst on dünaamiliselt "Salvesta uus".
+2026-05-17: Mobiilivaates sõna redaktorist nimekirja naastes keritakse nimekiri automaatselt valitud sõna juurde.
+2026-05-17: Eemaldatud nimekirja kerimisel sujuv animatsioon (smooth scroll), et navigatsioon oleks kiirem ja kohene.
