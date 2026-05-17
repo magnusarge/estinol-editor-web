@@ -1095,7 +1095,7 @@ function confirmDialog(title, message) {
 
 function showSuccessDialog(wordAlgvorm) {
   return new Promise((resolve) => {
-    els.successDialogMessage.innerHTML = `Sõna <b>${wordAlgvorm}</b> lisatud andmebaasi.`;
+    els.successDialogMessage.innerHTML = `Sõna <b>${wordAlgvorm}</b> on lisatud andmebaasi.`;
     els.successDialogOverlay.classList.remove('hidden');
     
     // Timeout is used to reliably set focus after removing hidden class
