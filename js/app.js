@@ -115,6 +115,17 @@ const StringUtils = {
       return str;
     }
     return StringUtils.normalize(str);
+  },
+  filterKey: (text, lang) => {
+    let str = text.toLowerCase().trim();
+    if (lang === 'es') {
+      const withDia = 'áéíóúü';
+      const withoutDia = 'aeiouu';
+      for (let i = 0; i < withDia.length; i++) {
+        str = str.split(withDia[i]).join(withoutDia[i]);
+      }
+    }
+    return str;
   }
 };
 
@@ -732,8 +743,9 @@ function navigateWordList(direction) {
 
 function getWordsByLetter(letter) {
   return state.words.filter(w => {
-    const wordForm = w.algvorm.toLowerCase();
-    return wordForm && wordForm.startsWith(letter.toLowerCase());
+    if (!w.algvorm) return false;
+    const wordForm = StringUtils.filterKey(w.algvorm, state.currentLang);
+    return wordForm.startsWith(letter.toLowerCase());
   }).sort((a, b) => {
     const ak = StringUtils.sortKey(a.algvorm, state.currentLang);
     const bk = StringUtils.sortKey(b.algvorm, state.currentLang);
@@ -745,8 +757,9 @@ function getWordsByLetter(letter) {
 
 function getCountByLetter(letter) {
   return state.words.filter(w => {
-    const wordForm = w.algvorm.toLowerCase();
-    return wordForm && wordForm.startsWith(letter.toLowerCase());
+    if (!w.algvorm) return false;
+    const wordForm = StringUtils.filterKey(w.algvorm, state.currentLang);
+    return wordForm.startsWith(letter.toLowerCase());
   }).length;
 }
 
